@@ -1,0 +1,12 @@
+---
+- name: Install and configure MySql
+  hosts: all
+  vars:
+    mysql_root_password: "jelly22fi$h"
+  remote_user: ubuntu
+  become: yes
+
+  roles:
+  - mysql
+
+

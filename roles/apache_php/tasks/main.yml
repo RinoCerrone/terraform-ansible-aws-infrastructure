@@ -1,0 +1,69 @@
+---
+- name: Install Apache and PHP
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    name: 
+      - apache2
+      - php
+      - php-mysql
+      - libapache2-mod-php
+    state: latest
+
+- name: Delete existing index.html
+  file:
+    path: /var/www/html/index.html
+    state: absent
+      
+- name: Clone PHP Bookstore Website Example from GitHub
+  git:
+    repo: https://github.com/blue-sky-dev/PHP-Bookstore-Website-Example.git
+    dest: /var/www/html/
+    force: yes
+
+- name: Make sure Apache can read the PHP Bookstore files
+  file:
+    path: /var/www/html
+    state: directory
+    mode: "0755"
+    recurse: yes
+
+- name: Make sure Apache is running
+  systemd:
+    name: apache2
+    state: started
+
+
+      #- name: Print mysql_host variable
+      #  debug:
+      #    msg: "{{ mysql_host }}"
+
+
+- name: Update connectDB.php with new database host, user, and password
+  replace:
+    path: /var/www/html/bookstore/connectDB.php
+    regexp: "mysql:host=.*?;port=3306;dbname=bookstore','.*?', '.*?'"
+    replace: "mysql:host={{ mysql_host }};port=3306;dbname=bookstore','{{ mysql_user }}', '{{ mysql_password }}'"
+
+
+- name: Update database connection details in PHP files
+  ansible.builtin.shell: |
+    sed -i \
+    -e 's/book/Book/g' \
+    -e 's/cart/Cart/g' \
+    -e 's/Register.php/register.php/g' \
+    -e 's/users/Users/g' \
+    -e 's/order/Order/g' \
+    -e 's/customer/Customer/g' \
+    -e 's/Bookstore/bookstore/g' \
+    -e 's/\$servername = ".*";/\$servername = "{{ mysql_host }}";/g' \
+    -e 's/\$username = ".*";/\$username = "{{ mysql_user }}";/g' \
+    -e 's/\$password = ".*";/\$password = "{{ mysql_password }}";/g' \
+    {{ item }}
+  loop:
+    - /var/www/html/bookstore/index.php
+    - /var/www/html/bookstore/register.php
+    - /var/www/html/bookstore/edituser.php
+    - /var/www/html/bookstore/checkout.php
+  become: yes
+      
