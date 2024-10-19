@@ -65,7 +65,7 @@
       -e 's/mysqlx-bind-address\s*=\s*127\.0\.0\.1/mysqlx-bind-address     = 0.0.0.0/g'
       -e 's/bind-address\s*=\s*127\.0\.0\.1/bind-address            = 0.0.0.0/g'
       /etc/mysql/mysql.conf.d/mysqld.cnf
-  become: yes
+  Become: yes
 
 - name: Restart MySQL Service
   service:

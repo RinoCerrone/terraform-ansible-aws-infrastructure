@@ -19,7 +19,7 @@ resource "null_resource" "wait_for_ssh" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("/home/tkoma/AWS_keys/web_server_key.pem")
+      private_key = file("/home/matko/AWS_keys/web_server_key.pem")
       host        = aws_instance.apache[count.index].public_ip
     }
   }
