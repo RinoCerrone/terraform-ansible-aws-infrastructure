@@ -1,12 +1,11 @@
-resource "aws_security_group" "apache" {
-  name = "apache_acess"
-
-
+resource "aws_default_security_group" "default-sg" {
+  vpc_id=aws_vpc.myapp-vpc.id
+  
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.my_ip]
   }
 
   ingress {
@@ -36,6 +35,10 @@ resource "aws_security_group" "apache" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+       Name: "${var.env_prefix}-default-sg"
+    }
 }
 
 
