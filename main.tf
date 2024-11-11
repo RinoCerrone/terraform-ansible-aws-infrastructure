@@ -8,34 +8,13 @@ resource "aws_vpc" "myapp-vpc"{
        Name : "${var.env_prefix}-vpc"
     }
 }
-resource "aws_subnet" "myapp-subnet-1"{
-     vpc_id=aws_vpc.myapp-vpc.id
-     cidr_block= var.subnet_cidr_block
-     availability_zone=var.avail_zone
-
-     tags = {
-      Name: "${var.env_prefix}-subnet-1"
-     }
-}
-resource "aws_default_route_table" "main-rtb"{
-     default_route_table_id = aws_vpc.myapp-vpc.default_route_table_id
-     
-     route {
-      cidr_block= "0.0.0.0/0"
-      gateway_id = aws_internet_gateway.myapp-igw.id
-     }
-     
-
-     tags = {
-      Name: "${var.env_prefix}-main-rtb"
-     }
-}
-resource "aws_internet_gateway" "myapp-igw"{
-     vpc_id = aws_vpc.myapp-vpc.id
-
-     tags = {
-      Name: "${var.env_prefix}-igw"
-     }
+module "myapp-subnet"{
+  source = "./modules/subnet"
+  vpc_id = aws_vpc.myapp-vpc.id
+  default_route_table_id = aws_vpc.myapp-vpc.default_route_table_id
+  subnet_cidr_block = var.subnet_cidr_block
+  avail_zone = var.avail_zone
+  env_prefix = var.env_prefix
 }
 data "aws_ami" "latest-ubuntu-22_04-LTS"{
   most_recent = true
@@ -56,7 +35,7 @@ resource "aws_instance" "apache" {
   instance_type               = var.aws_instance_type
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_default_security_group.default-sg.id]
-  subnet_id                   = aws_subnet.myapp-subnet-1.id
+  subnet_id                   = module.myapp-subnet.subnet.id
   key_name                    = aws_key_pair.ssh-key.key_name
   availability_zone           = var.avail_zone
 
