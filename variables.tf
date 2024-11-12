@@ -7,3 +7,4 @@ variable aws_instance_type {}
 variable aws_instance_count {}
 variable public_key_location {}
 variable private_key_location {}
+variable image_name {}

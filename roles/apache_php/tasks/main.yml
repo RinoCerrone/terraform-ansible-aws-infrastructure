@@ -34,11 +34,6 @@
     state: started
 
 
-      #- name: Print mysql_host variable
-      #  debug:
-      #    msg: "{{ mysql_host }}"
-
-
 - name: Update connectDB.php with new database host, user, and password
   replace:
     path: /var/www/html/bookstore/connectDB.php
