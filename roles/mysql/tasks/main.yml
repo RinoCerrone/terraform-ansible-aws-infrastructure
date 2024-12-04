@@ -1,23 +1,20 @@
----
-
 - name: Install MySQL Server and Python3-mysql
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     cache_valid_time: 3600
-    name: 
+    name:
       - python3-pymysql
-      - mysql-server  
-    state: latest
+      - mysql-server
+    state: present
 
 - name: Start MySQL Service and enable on start
-  service:
+  ansible.builtin.service:
     name: mysql
     state: started
-    enabled: yes
-
+    enabled: true
 
 - name: Save root password in .my.cnf
-  template:
+  ansible.builtin.template:
     src: root_cnf.j2
     dest: /root/.my.cnf
     owner: root
@@ -25,7 +22,7 @@
 
 
 - name: Set password for root user
-  mysql_user:
+  community.mysql.mysql_user:
     name: "root"
     password: "{{ mysql_root_password }}"
     priv: '*.*:ALL,GRANT'
@@ -35,28 +32,29 @@
 
 
 - name: Create MySQL User
-  mysql_user:
-    name: "bookstore_user"
-    password: "S3cur3L0gin!"
+  community.mysql.mysql_user:
+    name: "{{ mysql_mysql_user }}"
+    password: "{{ mysql_mysql_password }}"
     host: '%'
     priv: '*.*:ALL'
     state: present
 
 
 - name: Create MySQL Database
-  mysql_db:
+  community.mysql.mysql_db:
     name: "bookstore"
     state: present
 
 
 - name: Download SQL dump from GitHub
-  get_url:
+  ansible.builtin.get_url:
     url: "https://raw.githubusercontent.com/blue-sky-dev/PHP-Bookstore-Website-Example/main/bookstore/database.sql"
     dest: "/home/ubuntu/"
+    mode: '0644'
 
 - name: Modify and remove first two lines from SQL dump file
-  command: "sed -i '1,2d; s/`book`/Book/g' /home/ubuntu/database.sql"
-
+  ansible.builtin.command: "sed -i '1,2d; s/`book`/Book/g' /home/ubuntu/database.sql"
+  changed_when: false
 
 - name: Update mysql.conf.d file
   ansible.builtin.command:
@@ -65,17 +63,15 @@
       -e 's/mysqlx-bind-address\s*=\s*127\.0\.0\.1/mysqlx-bind-address     = 0.0.0.0/g'
       -e 's/bind-address\s*=\s*127\.0\.0\.1/bind-address            = 0.0.0.0/g'
       /etc/mysql/mysql.conf.d/mysqld.cnf
-  
+  changed_when: false
 
 - name: Restart MySQL Service
-  service:
+  ansible.builtin.service:
     name: mysql
     state: restarted
-    
-      
+
 - name: Import SQL dump into MySQL database
-  mysql_db:
+  community.mysql.mysql_db:
     name: "bookstore"
     state: import
     target: "/home/ubuntu/database.sql"
-
