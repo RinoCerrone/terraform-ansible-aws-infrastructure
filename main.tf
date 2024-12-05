@@ -32,7 +32,7 @@ module "myapp-servers"{
 resource "null_resource" "ansible_provisioning" {
 
   triggers = {
-    instance_ips = join(",", module.myapp-servers.instances[*].public_ip)
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
