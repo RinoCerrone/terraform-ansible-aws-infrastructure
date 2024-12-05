@@ -1,4 +1,9 @@
----
+- name: Wait for SSH to be available
+  ansible.builtin.wait_for:
+    port: 22
+    delay: 10
+    timeout: 60
+
 - name: Install Apache and PHP
   ansible.builtin.apt:
     update_cache: true

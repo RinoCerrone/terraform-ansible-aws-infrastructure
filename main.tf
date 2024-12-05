@@ -3,7 +3,7 @@ provider "aws" {
 }
 resource "aws_vpc" "myapp-vpc"{
     cidr_block=var.vpc_cidr_block
-
+    enable_dns_hostnames = true
     tags = {
        Name : "${var.env_prefix}-vpc"
     }
@@ -29,16 +29,11 @@ module "myapp-servers"{
   subnet_id = module.myapp-subnet.subnet.id
 }
 
-resource "null_resource" "delay" {
-  depends_on = [module.myapp-servers.instances]
-
-  provisioner "local-exec" {
-    command = "sleep 60"
-  }
-}
 resource "null_resource" "ansible_provisioning" {
 
-  depends_on = [null_resource.delay]
+  triggers = {
+    instance_ips = join(",", module.myapp-servers.instances[*].public_ip)
+  }
 
   provisioner "local-exec" {
     command = "ansible-playbook -i ${module.myapp-servers.instances[0].public_ip}, --private-key $(echo ${var.private_key_location}) --extra-vars \"mysql_host=$(terraform output -no-color -raw second_instance_ip)\"  install_apache_and_php.yml"
