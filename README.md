@@ -29,10 +29,10 @@ Terraform creates the AWS resources (network, security groups, and two EC2 insta
 ## ⚙️ Setup Instructions
 
 1. **Clone the repository**
-   ```bash
+   ``bash
    git clone https://github.com/<your-username>/<repo-name>.git
    cd <repo-name>
-2. **Define all required variables**
+3. **Define all required variables**
 
 Create a file named terraform.tfvars in the project root directory.
 This file is not included in the repository for security reasons.
