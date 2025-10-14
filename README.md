@@ -43,7 +43,7 @@ aws_region        = "eu-central-1"
 aws_instance_type = "t2.micro"
 public_key_path   = "~/.ssh/id_rsa.pub"
 private_key_path  = "~/.ssh/id_rsa"
-⚠️ Update the my_ip variable with your current public IP address.
+Update the my_ip variable with your current public IP address.
 This allows SSH access to the EC2 instances from your machine.
 If your IP changes, you must update this variable and re-apply Terraform.
 
