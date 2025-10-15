@@ -29,10 +29,10 @@ Terraform creates the AWS resources (network, security groups, and two EC2 insta
 ## ⚙️ Setup Instructions
 
 1. **Clone the repository**
-   ``bash
-   git clone https://github.com/<your-username>/<repo-name>.git
+   ```bash
+   git clone https://github.com/RinoCerrone/terraform-ansible-aws-infrastructure.git
    cd <repo-name>
-3. **Define all required variables**
+2. **Define all required variables**
 
 Create a file named terraform.tfvars in the project root directory.
 This file is not included in the repository for security reasons.
@@ -41,22 +41,23 @@ Example:
 my_ip             = "your_public_ip/32"
 aws_region        = "eu-central-1"
 aws_instance_type = "t2.micro"
-public_key_path   = "~/.ssh/id_rsa.pub"
-private_key_path  = "~/.ssh/id_rsa"
+public_key_path   = "`~/.ssh/id_rsa.pub`"
+private_key_path  = "`~/.ssh/id_rsa`"
 Update the my_ip variable with your current public IP address.
 This allows SSH access to the EC2 instances from your machine.
 If your IP changes, you must update this variable and re-apply Terraform.
 
 3. **Initialize Terraform**
-``bash
+```bash
 terraform init
-
+```
 4. **Apply the Terraform configuration**
-``bash
+```bash
 terraform apply
-Confirm with yes when prompted. Terraform will create the infrastructure on AWS.
+```
+Confirm with **yes** when prompted. Terraform will create the infrastructure on AWS.
 
-**Notes**
+## Notes
 
 The file terraform.tfvars is intentionally not uploaded to GitHub to protect sensitive data such as IP addresses, keys, and credentials.
 
